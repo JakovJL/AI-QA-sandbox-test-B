@@ -1,0 +1,123 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Medusa v2 Store API (read-only subset)",
+    "version": "2.x-sandbox",
+    "description": "Мини-спека для Schemathesis (этап 2.5): только GET-эндпоинты, снятые картой этапа 1. Мутаций нет."
+  },
+  "paths": {
+    "/store/products": {
+      "get": {
+        "operationId": "list-products",
+        "parameters": [
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer" } },
+          { "name": "q", "in": "query", "schema": { "type": "string" } },
+          { "name": "tag_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "collection_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "region_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "order", "in": "query", "schema": { "type": "string" } },
+          { "name": "fields", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "products": { "type": "array", "items": { "type": "object" } },
+                    "count": { "type": "integer" },
+                    "offset": { "type": "integer" },
+                    "limit": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid input", "content": { "application/json": { "schema": { "type": "object" } } } }
+        }
+      }
+    },
+    "/store/product-tags": {
+      "get": {
+        "operationId": "list-product-tags",
+        "parameters": [
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of tags",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "product_tags": { "type": "array", "items": { "type": "object" } }, "count": { "type": "integer" } } } } }
+          },
+          "400": { "description": "Invalid input", "content": { "application/json": { "schema": { "type": "object" } } } }
+        }
+      }
+    },
+    "/store/product-categories": {
+      "get": {
+        "operationId": "list-product-categories",
+        "parameters": [
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of categories",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "product_categories": { "type": "array", "items": { "type": "object" } }, "count": { "type": "integer" } } } } }
+          },
+          "400": { "description": "Invalid input", "content": { "application/json": { "schema": { "type": "object" } } } }
+        }
+      }
+    },
+    "/store/collections": {
+      "get": {
+        "operationId": "list-collections",
+        "parameters": [
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of collections",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "collections": { "type": "array", "items": { "type": "object" } }, "count": { "type": "integer" } } } } }
+          },
+          "400": { "description": "Invalid input", "content": { "application/json": { "schema": { "type": "object" } } } }
+        }
+      }
+    },
+    "/store/regions": {
+      "get": {
+        "operationId": "list-regions",
+        "parameters": [
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of regions",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "regions": { "type": "array", "items": { "type": "object" } }, "count": { "type": "integer" } } } } }
+          },
+          "400": { "description": "Invalid input", "content": { "application/json": { "schema": { "type": "object" } } } }
+        }
+      }
+    },
+    "/store/shipping-options": {
+      "get": {
+        "operationId": "list-shipping-options",
+        "parameters": [
+          { "name": "cart_id", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of shipping options",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "shipping_options": { "type": "array", "items": { "type": "object" } } } } } }
+          },
+          "400": { "description": "Invalid cart", "content": { "application/json": { "schema": { "type": "object" } } } }
+        }
+      }
+    }
+  }
+}
