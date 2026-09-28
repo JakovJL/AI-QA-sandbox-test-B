@@ -69,7 +69,7 @@ async function runOnce(t: Target, n: number): Promise<{ run: number; finalUrl: s
     await set("email", `qa-series${n}@test.local`);
 
     await page.evaluate(() => {
-      const cont = [...document.querySelectorAll('main button')].find(b => /continue to delivery/i.test(b.innerText));
+      const cont = [...document.querySelectorAll<HTMLButtonElement>('main button')].find(b => /continue to delivery/i.test(b.innerText));
       if (cont) cont.click();
     });
     await page.waitForTimeout(5000);
