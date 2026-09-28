@@ -25,4 +25,14 @@ bash scripts/api.sh GET '/store/products?limit=2'
 bash scripts/api.sh --admin GET '/products?limit=1'
 ```
 
+### TypeScript-контур (npm)
+
+```bash
+npm install                      # playwright, @medusajs/js-sdk, ajv/zod, MCP, tsx
+npx playwright install chromium  # контур Б (~150 МБ)
+npm run verify                   # smoke Store API (TS, --resolve через pinned IP)
+npx tsx scripts/ts/smoke-browser.ts   # smoke контура Б (headless chromium + обход DNS)
+npm run typecheck                # tsc --noEmit
+```
+
 Секреты — в локальном `.env` (в git не попадает; шаблон — `.env.example`).

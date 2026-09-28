@@ -3,6 +3,7 @@
 
 # локальное состояние
 .cache/
+.freebuff/
 reports/artifacts/
 reports/screenshots/
 reports/traces/
