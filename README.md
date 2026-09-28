@@ -1,38 +1,67 @@
-# AI-QA sandbox test
+# AI-QA sandbox-test-B
 
-Тестирование sandbox-магазина (Medusa v2 + Next.js storefront) через AI: агентное исследование,
-MCP-инструменты, детерминированное подтверждение находок. План и процесс — `docs/PLAN.md`.
-Язык автоматизации — TypeScript; bash-скрипты остаются для ручных запросов.
+QA-отчёт и evidence для тестирования Medusa v2 sandbox: https://sandbox-session-cand-c26fa443df2a4d52ba4c0f61ea385fac.fly.dev/
+
+Результат: **12 подтверждённых дефектов** (2 High — блокеры покупки, 6 Medium, 4 Low) + 2 отозванных кандидата — https://github.com/JakovJL/AI-QA-sandbox-test-B/issues
+
+Программа: 5 этапов (API → UI → NFR), ~118 проверок, каждая находка — детерминированное воспроизведение + сырые артефакты.
+
+## Как тестировали
+
+Слои, от наружного внутрь:
+
+- **Карта поверхностей** — read-only зондирование Store/Admin API и страниц витрины: база сравнения без догадок (bash-харнесс с пиннингом IP через DoH — обход DNS-фильтра провайдера).
+- **API-контракт** — TypeScript + undici: пагинация/фильтры/сортировки/fields, негативные корзины (кривые variant/qty/чужие ID/ключи), полный чекаут-флоу с идемпотентностью, Store↔Admin дифференциал; фаззинг Schemathesis по мини-спеке (GET-only, ≤30 req/мин).
+- **UI как пользователь** — живой браузер (контур А) для исследования; headless chromium (контур Б) для доказательств: DOM-замеры, сеть, консоль, скриншоты, десктоп + мобайл 390×844.
+- **UI-API сверки** — самый урожайный слой: пустой delivery при живом API, клиентские фетчи на 127.0.0.1:9001, мета-теги на 127.0.0.1:8000, согласованность корзины.
+- **NFR** — security-заголовки (матрица 4 поверхности × 6), флаги куки, SEO-эндпоинты, axe-core на 5 страницах, стабильность (30 замеров, p50/p95).
+- **Root cause** — спуск в клиентский бандл и network-лог: захардкоженный `127.0.0.1:9001` объяснил три разных симптома (disabled варианты, пустой delivery, класс «localhost в прод-артефактах»).
+
+## Как верифицировали
+
+- **Находка ≠ баг**: BUG-XXX только при (а) ожидании с основанием (док Medusa v2 / спека / согласованность Store↔Admin↔UI), (б) детерминированном прогоне в контуре Б, (в) сыром артефакте. Одно наблюдение = candidate в реестре.
+- **Сверка с эталоном**: каждый кандидат проверялся по документации Medusa v2; 4 кандидата отклонены (конвенция major units цен, `/admin/stores` вместо v1-пути, ложный срабатывание зонда, невоспроизводимая валюта) — с разбором причин.
+- **A/B-контроль изменчивых вещей**: интермиттентность измерялась сериями (BUG-007: 7 прогонов), а не «показалось»; песочница общая — каталог менялся параллельно, count сверялся двумя запросами подряд.
+- **Чекпойнты**: план этапа и перевод кандидатов в дефекты — только после согласия заказчика (2 чекпойнта на этап).
+- **Предохранители**: без реальной оплаты, без массовых мутаций, маркировка данных `@test.local`/`qa:true`, лимиты фаззинга и очистка (PLAN §13.5).
 
 ## Структура
 
 ```
-docs/PLAN.md            программа тестирования (этапы, области, методология)
-docs/00-environment.md  окружение: DNS-блокировка провайдера и обход
-config/targets.sh       харнесс доступа к цели (--resolve через DoH, режим определяется автоматически)
-scripts/resolve-doh.sh  реальный IP цели + сравнение с DNS провайдера
-scripts/api.sh          ручные запросы к Store/Admin API
-registry/               реестры: требования-по-наблюдению, допущения, кейсы
-reports/templates/      шаблоны: багрепорт, сводный отчёт прогона
-reports/bugs/           багрепорты BUG-XXX (появятся по ходу этапов)
+docs/PLAN.md             программа тестирования (этапы, методология, предохранители, §13 ограничения)
+docs/STRATEGY.md         выжимка конвейера: контуры А/Б, находка→дефект
+docs/01-api-map.md       карта эндпоинов Store/Admin API и страниц витрины
+docs/00-environment.md   окружение: DNS-блокировка провайдера и обход
+config/targets.sh        харнесс доступа к цели (--resolve через DoH)
+registry/                реестры: требования-по-наблюдению (R-0xx), допущения (A-0xx), тест-кейсы (TC-0xx) с линками на issues
+reports/run-final.md     финальный сводный отчёт программы
+reports/run-stage*.md    отчёты этапов 2–4
+reports/bugs/BUG-0XX.md  багрепорты (12 шт., все с воспроизведением)
+reports/observations/    наблюдения вне дефектов (сортировки, админка, инвентарь)
+reports/artifacts/       сырые JSON/HTML-доказательства (вне git, пути в репортах)
+reports/fuzzing/         Schemathesis: мини-спека, рантнер, логи
+reports/screenshots/     скриншоты доказательств
+scripts/api-map.sh       карта API (read-only)
+scripts/pages-map.sh     карта страниц витрины
+scripts/ts/              контур Б: pinned-IP клиент, verify- и NFR-скрипты (TS/Playwright)
 ```
 
 ## Быстрый старт
 
 ```bash
-bash scripts/resolve-doh.sh          # реальный IP цели (обход DNS-фильтра провайдера)
-bash scripts/api.sh GET '/store/products?limit=2'
-bash scripts/api.sh --admin GET '/products?limit=1'
-```
-
-### TypeScript-контур (npm)
-
-```bash
-npm install                      # playwright, @medusajs/js-sdk, ajv/zod, MCP, tsx
-npx playwright install chromium  # контур Б (~150 МБ)
-npm run verify                   # smoke Store API (TS, --resolve через pinned IP)
-npx tsx scripts/ts/smoke-browser.ts   # smoke контура Б (headless chromium + обход DNS)
-npm run typecheck                # tsc --noEmit
+npm install && npx playwright install chromium
+npm run verify                        # smoke Store API (pinned IP)
+npx tsx scripts/ts/verify-candidates.ts   # подтверждение count/цены/поиска
+npx tsx scripts/ts/verify-ui-journeys.ts  # UI-джорни контура Б
+npx tsx scripts/ts/nfr-headers.ts     # матрица security-заголовков
+bash scripts/api.sh GET '/store/products?limit=2'   # ручные запросы
 ```
 
 Секреты — в локальном `.env` (в git не попадает; шаблон — `.env.example`).
+
+## Агенты и инструменты
+
+- **Freebuff (Buffy)** — основной агент: вся разведка, API+UI+NFR фазы, верификация, оформление issues. Живой браузер для контура А, headless chromium (Playwright) для контура Б.
+- **Schemathesis 4.28** — фаззинг в согласованных лимитах (мини-спека, GET-only, rate-limit, seed в отчёте).
+- **axe-core 4.10** — инъекция в headless-страницы для a11y-сканов.
+- Остальное — нативные инструменты (git/gh CLI, Node/undici, bash) поверх системной политики evidence-discipline.
