@@ -23,7 +23,8 @@
 | 200 | `/admin/stores` | **в v2 ресурс — `/admin/stores` (множественное); 404 на `/admin/store` — неверное ожидание от v1, НЕ кандидат** |
 | 200 | `/admin/promotions`, `/admin/campaigns` | промо-модуль есть (в системе пусто) |
 | 200 | `/admin/users`, `/admin/api-keys`, `/admin/inventory-items`, `/admin/shipping-options` | управленческие ресурсы |
-| 404 | `/admin/carts`, `/admin/payment-providers`, `/admin/variants`, `/admin/customers/me` | сверить с докой v2 на этапе 2 (вероятно, ожидаемо: корзины вне админ-скоупа, провайдеры — через регионы) |
+| 404 | `/admin/carts`, `/admin/variants`, `/admin/customers/me` | вероятно, соответствует v2 (листинга корзин/вариантов в админ-скоупе нет) — финальная сверка на этапе 2 |
+| 404 | `/admin/payment-providers` (и `/admin/regions/{id}/payment-providers`) | **уточнено 28.09:** маршрут не зарегистрирован в сборке (Express «Cannot GET»), тело — HTML; сверить с докой и версией Medusa на этапе 2 — кандидат на перепроверку |
 
 ## Страницы витрины (Next.js starter, `/dk` — активный регион)
 
