@@ -19,3 +19,7 @@ package-lock.json
 *.tmp
 .DS_Store
 Thumbs.db
+
+# schemathesis service files
+.schemathesis/
+reports/fuzzing/schemathesis-report/
