@@ -5,6 +5,8 @@
 | ID | Область | Название | Тип (API/UI/NFR) | Статус | Дефект(ы) |
 |----|---------|----------|------------------|--------|-----------|
 | TC-001 | 1. Каталог и пагинация | count в `/store/products` при limit 1/2/10 | API | fail (28.09, контур Б) | BUG-001 ([issue #1](https://github.com/JakovJL/AI-QA-sandbox-test-B/issues/1)) |
+| — | 14. Безопасность | матрица security-заголовков + куки + x-powered-by (4 поверхности) | NFR | fail: 6 заголовков отсутствуют, куки без флагов (28.09, этап 4.1) | BUG-009 ([issue #9](https://github.com/JakovJL/AI-QA-sandbox-test-B/issues/9)) |
+| — | 12. SEO | robots.txt/sitemap.xml content-type; og:image/twitter:image | NFR | fail: HTML-200 вместо текста/XML; og/twitter → 127.0.0.1 (28.09, этап 4.2) | BUG-010 ([issue #10](https://github.com/JakovJL/AI-QA-sandbox-test-B/issues/10)), BUG-011 ([issue #11](https://github.com/JakovJL/AI-QA-sandbox-test-B/issues/11)) |
 | TC-002 | 4. Регионы/валюты | согласованность цены API ↔ корзина ↔ витрина (Sweatshirt, eur) | UI+API | fail→retracted (28.09: конвенция v2 — major units; BUG-002 отозван) | BUG-002 ([issue #2](https://github.com/JakovJL/AI-QA-sandbox-test-B/issues/2), retracted) |
 | TC-003 | 11. UI-состояния | страница поиска `/dk/search?q=…` и вход в поиск из шапки | UI | fail (28.09, контуры А+Б) | BUG-003 ([issue #3](https://github.com/JakovJL/AI-QA-sandbox-test-B/issues/3)) |
 | TC-004 | 1. Каталог/10. Ошибки | `limit=-1` в `/store/products` (валидация пагинации) | API | fail (28.09, этап 2.1; объединено с BUG-005) | BUG-005 |
@@ -13,6 +15,8 @@
 | TC-010 | 6. Чекаут/11. UI | сабмит адресной формы в чекауте (контур А + серии в контуре Б: 5 десктоп + мобайл) | UI | fail (интермиттент, мобайл-воспроизводимый): 2/7 → /null/checkout → 404 (28.09, этап 3.3+3.5) | BUG-007 ([issue #7](https://github.com/JakovJL/AI-QA-sandbox-test-B/issues/7)) |
 | TC-011 | 5. Доставка/6. Чекаут | список способов доставки на шаге delivery | UI | fail: radiogroup пустая, Continue to payment disabled (28.09, этап 3.3, десктоп+мобайл) | BUG-008 ([issue #8](https://github.com/JakovJL/AI-QA-sandbox-test-B/issues/8)) |
 | TC-012 | 1. Каталог/11. UI | клиентские фетчи 127.0.0.1:9001 и /blocking-fault.js; сортировки sortBy | UI | fail/pass-контраст (28.09, контур Б) | BUG-008 (причина), наблюдения |
+| TC-013 | 12. Доступность | axe-core скан 5 страниц (главная/каталог/карточка/корзина/чекаут) | UI | fail: 3 critical + 11 serious (28.09, этап 4.3) | BUG-012 ([issue #12](https://github.com/JakovJL/AI-QA-sandbox-test-B/issues/12)) |
+| TC-014 | 13. Стабильность | 30 запросов /store/products (3×10, p50/p95, ≤24 req/мин) | NFR | pass: 30/30 → 200, p50=243ms (28.09, этап 4.4) | — |
 | TC-005 | 1. Каталог | пагинация/фильтры/сортировка/fields каталога (13 проверок) | API | pass (28.09, этап 2.1) | — |
 | TC-006 | 2. Корзина | негативные входы корзины (12 проверок) | API | pass (28.09, этап 2.2) | — |
 | TC-007 | 6. Чекаут | полный пайплайн + идемпотентность complete (7 проверок) | API | pass (28.09, этап 2.3) | — |
