@@ -25,27 +25,6 @@ QA-отчёт и evidence для тестирования Medusa v2 sandbox: htt
 - **Чекпойнты**: план этапа и перевод кандидатов в дефекты — только после согласия заказчика (2 чекпойнта на этап).
 - **Предохранители**: без реальной оплаты, без массовых мутаций, маркировка данных `@test.local`/`qa:true`, лимиты фаззинга и очистка (PLAN §13.5).
 
-## Структура
-
-```
-docs/PLAN.md             программа тестирования (этапы, методология, предохранители, §13 ограничения)
-docs/STRATEGY.md         выжимка конвейера: контуры А/Б, находка→дефект
-docs/01-api-map.md       карта эндпоинов Store/Admin API и страниц витрины
-docs/00-environment.md   окружение: DNS-блокировка провайдера и обход
-config/targets.sh        харнесс доступа к цели (--resolve через DoH)
-registry/                реестры: требования-по-наблюдению (R-0xx), допущения (A-0xx), тест-кейсы (TC-0xx) с линками на issues
-reports/run-final.md     финальный сводный отчёт программы
-reports/run-stage*.md    отчёты этапов 2–4
-reports/bugs/BUG-0XX.md  багрепорты (12 шт., все с воспроизведением)
-reports/observations/    наблюдения вне дефектов (сортировки, админка, инвентарь)
-reports/artifacts/       сырые JSON/HTML-доказательства (вне git, пути в репортах)
-reports/fuzzing/         Schemathesis: мини-спека, рантнер, логи
-reports/screenshots/     скриншоты доказательств
-scripts/api-map.sh       карта API (read-only)
-scripts/pages-map.sh     карта страниц витрины
-scripts/ts/              контур Б: pinned-IP клиент, verify- и NFR-скрипты (TS/Playwright)
-```
-
 ## Быстрый старт
 
 ```bash
